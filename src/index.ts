@@ -1,4 +1,4 @@
-import { Function, Node, toPolar, toCartesian, round } from 'agora-graph';
+import { Function, Node, toPolar, toCartesian } from 'agora-graph';
 import _ from 'lodash';
 import { Solve, ReformatLP } from 'javascript-lp-solver';
 
@@ -27,99 +27,82 @@ export const diamondGraphRotation: Function<Props> = function(
 
     return { ...n, ...cart };
   });
-  const vs = _.sortBy(rotatedNodes, ({ x }) => x);
-  const hs = _.sortBy(rotatedNodes, ({ y }) => y);
+
+  const vs = _.sortBy(rotatedNodes, 'x');
+  const hs = _.sortBy(rotatedNodes, 'y');
+
   const diamonds = _.map(rotatedNodes, n => {
     return node2Diamond(
       n,
-      _.findIndex(vs, ['index', n.index])!,
-      _.findIndex(hs, ['index', n.index])!
+      _.findIndex(vs, ['index', n.index])!, // i'm sure it exists
+      _.findIndex(hs, ['index', n.index])! // i'm sure it exists
     );
   });
 
   const constraints: string[] = [];
 
+  // set minimize constraint
   const minimize = _(diamonds)
     .map(({ index, x, y }) => `x${index} - ${x} + y${index} - ${y}`)
     .join(' + ');
 
   constraints.push('min: ' + minimize + ';');
 
+  // sort by index
   diamonds.sort((a, b) => a.index - b.index);
 
+  // setting up orthogonal constraints
   for (let i = 0; i < diamonds.length; i++) {
     const { index, v, h } = diamonds[i];
-    if (v < vs.length - 1) {
+    if (v + 1 < vs.length) {
+      // is not last
+      // x'_v(i) <= x'_v(i+1)
       constraints.push(`x${index} - x${vs[v + 1].index} <= 0;`);
     }
-    // x'_v(i) <= y'_v(i+1)
-    if (h < hs.length - 1) {
+    if (h + 1 < hs.length) {
+      // is not last
+      // y'_h(i) <= y'_h(i+1)
       constraints.push(`y${index} - y${hs[h + 1].index} <= 0;`);
     }
   }
 
-  //
-  // for (let i = 0; i < diamonds.length; i++) {
-  //   const { index: iIdx, y: yi } = diamonds[i];
-  //   let ystar = -1;
-  //   for (let j = i - 1; j > 0; j--) {
-  //     const { index: jIdx, y: yj } = diamonds[j];
+  // sort by x
+  diamonds.sort((a, b) => a.x - b.x);
 
-  //     if (ystar < yj && yj <= yi) {
-  //       constraints.push(`y${jIdx} - y${iIdx} <= 0;`);
-  //       ystar = yj;
-  //     }
-  //   }
-  // }
+  for (let iIdx = 0; iIdx < diamonds.length; iIdx++) {
+    const { index: i, y: yi, wii: wi } = diamonds[iIdx];
 
-  // forall 1<=i<=j<=n xi <= xj and yi <= yj
-  //    x'j - x'i + y'j - y'i >= wi +wj
-  // console.log(diamonds);
+    for (let jIdx = iIdx + 1; jIdx < diamonds.length; jIdx++) {
+      const { index: j, y: yj, wii: wj } = diamonds[jIdx];
 
-  for (let i = 0; i < diamonds.length; i++) {
-    const { index: iIdx, x: xi, y: yi, width: wi } = diamonds[i];
-    for (let j = i + 1; j < diamonds.length; j++) {
-      const { index: jIdx, x: xj, y: yj, width: wj } = diamonds[j];
-      if (xi <= xj && yi <= yj) {
-        constraints.push(
-          `x${jIdx} - x${iIdx} + y${jIdx} - y${iIdx} >= ${(wi + wj) *
-            Math.SQRT2};`
-        );
+      // xj >= xi
+      if (yi <= yj) {
+        //wi is not width
+        constraints.push(`x${j} - x${i} + y${j} - y${i} >= ${wi + wj};`);
       }
-      if (xi >= xj && yi <= yj) {
-        constraints.push(
-          `x${iIdx} - x${jIdx} + y${jIdx} - y${iIdx} >= ${(wi + wj) *
-            Math.SQRT2};`
-        );
-      }
-      if (xi >= xj && yi >= yj) {
-        constraints.push(
-          `x${iIdx} - x${jIdx} + y${iIdx} - y${jIdx} >= ${(wi + wj) *
-            Math.SQRT2};`
-        );
-      }
-      if (xi <= xj && yi >= yj) {
-        constraints.push(
-          `x${jIdx} - x${iIdx} + y${iIdx} - y${jIdx} >= ${(wi + wj) *
-            Math.SQRT2};`
-        );
+
+      if (yi >= yj) {
+        constraints.push(`x${j} - x${i} + y${i} - y${j} >= ${wi + wj};`);
       }
     }
   }
 
+  // minimal position constraint
   for (let index = 0; index < diamonds.length; index++) {
     const { index: i, x, y } = diamonds[index];
     constraints.push(`x${i} >= ${x};`);
     constraints.push(`y${i} >= ${y};`);
   }
 
-  console.log(constraints.join('\n'));
+  const lpsolve = constraints.join('\n');
+  // transform to js constraint
+  const tmodel = ReformatLP(lpsolve);
 
-  const tmodel = ReformatLP(constraints.join('\n'));
-
-  // console.log(tmodel);
+  console.log(lpsolve);
   const solver = Solve(tmodel);
+
   const { feasible, result, bounded, ...rest } = solver;
+  // index => {x?: y:?}
   const positions: { [k: string]: any } = _.transform(
     rest,
     function(result: any, val: number, key: string) {
@@ -130,11 +113,30 @@ export const diamondGraphRotation: Function<Props> = function(
     {}
   );
 
+  // rotate back to cartesian
+  const rotatedPos: { [k: string]: { x: number; y: number } } = {};
+  _.forEach(diamonds, ({ index, x, y }) => {
+    const position: { x: number; y: number } = {
+      x: positions[index] && positions[index].x ? positions[index].x : x,
+      y: positions[index] && positions[index].y ? positions[index].y : y
+    };
+    const polar = toPolar(position);
+    polar.theta -= Math.PI / 4;
+    rotatedPos[index] = toCartesian(polar);
+  });
+
+  // map to nodes
+  const updatedNodes = _.map(graph.nodes, ({ index, x, y, ...rest }) => ({
+    index,
+    ...rest,
+    ...rotatedPos[index]
+  }));
+
   console.log(JSON.stringify(graph));
   console.log(JSON.stringify(diamonds));
   console.log(
     JSON.stringify(
-      diamonds.map(({ width, height, ...d }) => {
+      diamonds.map(({ wii: width, height, ...d }) => {
         const update: any = {};
         if (positions[d.index]) {
           if (positions[d.index].x) update.x = positions[d.index].x;
@@ -144,7 +146,7 @@ export const diamondGraphRotation: Function<Props> = function(
       })
     )
   );
-  return { graph };
+  return { graph: { nodes: updatedNodes, edges: graph.edges } };
 };
 
 type Diamond = {
@@ -154,8 +156,7 @@ type Diamond = {
   y: number;
   h: number;
   v: number;
-  width: number;
-  height: number;
+  wii: number;
 };
 
 function node2Diamond(
@@ -170,11 +171,6 @@ function node2Diamond(
     y,
     v,
     h,
-    width: Math.max(height, width) / 2,
-    height: Math.max(height, width) / 2
+    wii: (Math.max(height, width) / 2) * Math.SQRT2
   };
-}
-
-function diamond2Node(n: Node, { x, y }: Diamond): Node {
-  return { ...n, x, y };
 }

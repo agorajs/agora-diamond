@@ -52,5 +52,6 @@ const graph = {
 };
 
 test('Agora Diamond', () => {
-  diamondGraphRotation(graph);
+  const res = diamondGraphRotation(graph);
+  console.log(res);
 });
