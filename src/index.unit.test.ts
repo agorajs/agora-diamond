@@ -38,16 +38,16 @@ const graph = {
     { source: 1, target: 9 }
   ],
   nodes: [
-    { index: 0, label: 'undefined', x: 87, y: 44, width: 20, height: 10 },
-    { index: 1, label: 'undefined', x: 57, y: 43, width: 20, height: 10 },
-    { index: 2, label: 'undefined', x: 67, y: 72, width: 20, height: 10 },
-    { index: 3, label: 'undefined', x: 46, y: 58, width: 20, height: 10 },
-    { index: 4, label: 'undefined', x: 47, y: 46, width: 20, height: 10 },
-    { index: 5, label: 'undefined', x: 61, y: 29, width: 20, height: 10 },
-    { index: 6, label: 'undefined', x: 25, y: 57, width: 20, height: 10 },
-    { index: 7, label: 'undefined', x: 45, y: 85, width: 20, height: 10 },
-    { index: 8, label: 'undefined', x: 80, y: 67, width: 20, height: 10 },
-    { index: 9, label: 'undefined', x: 25, y: 25, width: 20, height: 10 }
+    { index: 0, label: '0', x: 87, y: 44, width: 20, height: 10 },
+    { index: 1, label: '1', x: 57, y: 43, width: 20, height: 10 },
+    { index: 2, label: '2', x: 67, y: 72, width: 20, height: 10 },
+    { index: 3, label: '3', x: 46, y: 58, width: 20, height: 10 },
+    { index: 4, label: '4', x: 47, y: 46, width: 20, height: 10 },
+    { index: 5, label: '5', x: 61, y: 29, width: 20, height: 10 },
+    { index: 6, label: '6', x: 25, y: 57, width: 20, height: 10 },
+    { index: 7, label: '7', x: 45, y: 85, width: 20, height: 10 },
+    { index: 8, label: '8', x: 80, y: 67, width: 20, height: 10 },
+    { index: 9, label: '9', x: 25, y: 25, width: 20, height: 10 }
   ]
 };
 
