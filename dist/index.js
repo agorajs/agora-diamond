@@ -78,15 +78,19 @@ exports.diamondGraphRotation = function (graph, options) {
     diamonds.sort(function (a, b) { return a.x - b.x; });
     for (var iIdx = 0; iIdx < diamonds.length; iIdx++) {
         var _b = diamonds[iIdx], i = _b.index, yi = _b.y, wi = _b.wii;
+        var ymax = null;
+        var ymin = null;
         for (var jIdx = iIdx + 1; jIdx < diamonds.length; jIdx++) {
             var _c = diamonds[jIdx], j = _c.index, yj = _c.y, wj = _c.wii;
             // xj >= xi
-            if (yi <= yj) {
+            if (yi <= yj && (ymax === null || yj <= ymax)) {
                 //wi is not width
                 constraints.push("x" + j + " - x" + i + " + y" + j + " - y" + i + " >= " + (wi + wj) + ";");
+                ymax = yj;
             }
-            if (yi >= yj) {
-                constraints.push("x" + j + " - x" + i + " + y" + i + " - y" + j + " >= " + (wi + wj) + ";");
+            if (yi >= yj && (ymin === null || yj >= ymin)) {
+                constraints.push("x" + j + " - x" + i + " - y" + j + " + y" + i + " >= " + (wi + wj) + ";");
+                ymin = yj;
             }
         }
     }
@@ -96,8 +100,8 @@ exports.diamondGraphRotation = function (graph, options) {
         constraints.push("x" + i + " >= " + x + ";");
         constraints.push("y" + i + " >= " + y + ";");
     }
-    var lpsolve = constraints.join('\n');
     // transform to js constraint
+    var lpsolve = constraints.join('\n');
     var tmodel = javascript_lp_solver_1.ReformatLP(lpsolve);
     // console.log(lpsolve);
     var solver = javascript_lp_solver_1.Solve(tmodel);
