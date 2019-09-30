@@ -72,17 +72,21 @@ export const diamondGraphRotation: Function<Props> = function(
   for (let iIdx = 0; iIdx < diamonds.length; iIdx++) {
     const { index: i, y: yi, wii: wi } = diamonds[iIdx];
 
+    let ymax = null;
+    let ymin = null;
     for (let jIdx = iIdx + 1; jIdx < diamonds.length; jIdx++) {
       const { index: j, y: yj, wii: wj } = diamonds[jIdx];
 
       // xj >= xi
-      if (yi <= yj) {
+      if (yi <= yj && (ymax === null || yj <= ymax)) {
         //wi is not width
         constraints.push(`x${j} - x${i} + y${j} - y${i} >= ${wi + wj};`);
+        ymax = yj;
       }
 
-      if (yi >= yj) {
-        constraints.push(`x${j} - x${i} + y${i} - y${j} >= ${wi + wj};`);
+      if (yi >= yj && (ymin === null || yj >= ymin)) {
+        constraints.push(`x${j} - x${i} - y${j} + y${i} >= ${wi + wj};`);
+        ymin = yj;
       }
     }
   }
@@ -94,8 +98,9 @@ export const diamondGraphRotation: Function<Props> = function(
     constraints.push(`y${i} >= ${y};`);
   }
 
-  const lpsolve = constraints.join('\n');
   // transform to js constraint
+  const lpsolve = constraints.join('\n');
+
   const tmodel = ReformatLP(lpsolve);
 
   // console.log(lpsolve);
