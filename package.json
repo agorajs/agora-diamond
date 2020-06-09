@@ -1,6 +1,6 @@
 {
   "name": "agora-diamond",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
   "iife": "dist/agora-diamond.iife.min.js",
