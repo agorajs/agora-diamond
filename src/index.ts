@@ -1,4 +1,5 @@
-import { Function, Node, toPolar, toCartesian } from 'agora-graph';
+import type { Function, Node } from 'agora-graph';
+import { toPolar, toCartesian } from 'agora-graph';
 import _ from 'lodash';
 import { Solve, ReformatLP } from 'javascript-lp-solver';
 
@@ -6,21 +7,13 @@ export type Props = {
   padding: number;
 };
 
-export const diamondRotation: Function<Props> = function(
-  graph,
-  options = { padding: 0 }
-) {
-  const diamonds = _.map(graph.nodes, node2Diamond);
-  return { graph };
-};
-
-export const diamondGraphRotation: Function<Props> = function(
+export const diamondGraphRotation: Function<Props> = function (
   graph,
   options = { padding: 0 }
 ) {
   graph.nodes.sort((a, b) => a.index - b.index);
 
-  const rotatedNodes = _.map(graph.nodes, n => {
+  const rotatedNodes = _.map(graph.nodes, (n) => {
     const polar = toPolar(n);
     polar.theta += Math.PI / 4;
     const cart = toCartesian(polar);
@@ -31,7 +24,7 @@ export const diamondGraphRotation: Function<Props> = function(
   const vs = _.sortBy(rotatedNodes, 'x');
   const hs = _.sortBy(rotatedNodes, 'y');
 
-  const diamonds = _.map(rotatedNodes, n => {
+  const diamonds = _.map(rotatedNodes, (n) => {
     return node2Diamond(
       n,
       _.findIndex(vs, ['index', n.index])!, // i'm sure it exists
@@ -105,7 +98,7 @@ export const diamondGraphRotation: Function<Props> = function(
   // index => {x?: y:?}
   const positions: { [k: string]: any } = _.transform(
     rest,
-    function(result: any, val: number, key: string) {
+    function (result: any, val: number, key: string) {
       const tpe = key.substr(0, 1);
       const index = key.substr(1);
       (result[index] || (result[index] = {}))[tpe] = val;
@@ -118,7 +111,7 @@ export const diamondGraphRotation: Function<Props> = function(
   _.forEach(diamonds, ({ index, x, y }) => {
     const position: { x: number; y: number } = {
       x: positions[index] && positions[index].x ? positions[index].x : x,
-      y: positions[index] && positions[index].y ? positions[index].y : y
+      y: positions[index] && positions[index].y ? positions[index].y : y,
     };
     const polar = toPolar(position);
     polar.theta -= Math.PI / 4;
@@ -129,7 +122,7 @@ export const diamondGraphRotation: Function<Props> = function(
   const updatedNodes = _.map(graph.nodes, ({ index, x, y, ...rest }) => ({
     index,
     ...rest,
-    ...rotatedPos[index]
+    ...rotatedPos[index],
   }));
 
   console.log(JSON.stringify(graph));
@@ -171,6 +164,6 @@ function node2Diamond(
     y,
     v,
     h,
-    wii: (Math.max(height, width) / 2) * Math.SQRT2
+    wii: (Math.max(height, width) / 2) * Math.SQRT2,
   };
 }
