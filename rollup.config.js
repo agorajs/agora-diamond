@@ -32,7 +32,7 @@ export default [
         babelHelpers: 'bundled',
         exclude: ['node_modules/**'],
       }),
-      // terser(),
+      terser(),
     ],
   },
 
