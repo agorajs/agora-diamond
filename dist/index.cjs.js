@@ -132,6 +132,8 @@ var diamondGraphRotation = function diamondGraphRotation(graph) {
         _i = _diamonds$iIdx.index,
         yi = _diamonds$iIdx.y,
         wi = _diamonds$iIdx.wii;
+    var ymax = null;
+    var ymin = null;
 
     for (var jIdx = iIdx + 1; jIdx < diamonds.length; jIdx++) {
       var _diamonds$jIdx = diamonds[jIdx],
@@ -139,13 +141,15 @@ var diamondGraphRotation = function diamondGraphRotation(graph) {
           yj = _diamonds$jIdx.y,
           wj = _diamonds$jIdx.wii; // xj >= xi
 
-      if (yi <= yj) {
+      if (yi <= yj && (ymax === null || yj <= ymax)) {
         //wi is not width
         constraints.push("x".concat(j, " - x").concat(_i, " + y").concat(j, " - y").concat(_i, " >= ").concat(wi + wj, ";"));
+        ymax = yj;
       }
 
-      if (yi >= yj) {
-        constraints.push("x".concat(j, " - x").concat(_i, " + y").concat(_i, " - y").concat(j, " >= ").concat(wi + wj, ";"));
+      if (yi >= yj && (ymin === null || yj >= ymin)) {
+        constraints.push("x".concat(j, " - x").concat(_i, " - y").concat(j, " + y").concat(_i, " >= ").concat(wi + wj, ";"));
+        ymin = yj;
       }
     }
   } // minimal position constraint
@@ -158,12 +162,12 @@ var diamondGraphRotation = function diamondGraphRotation(graph) {
         y = _diamonds$_index.y;
     constraints.push("x".concat(_i2, " >= ").concat(x, ";"));
     constraints.push("y".concat(_i2, " >= ").concat(y, ";"));
-  }
+  } // transform to js constraint
 
-  var lpsolve = constraints.join('\n'); // transform to js constraint
 
-  var tmodel = javascriptLpSolver.ReformatLP(lpsolve);
-  console.log(lpsolve);
+  var lpsolve = constraints.join('\n');
+  var tmodel = javascriptLpSolver.ReformatLP(lpsolve); // console.log(lpsolve);
+
   var solver = javascriptLpSolver.Solve(tmodel);
 
   var feasible = solver.feasible,
@@ -204,27 +208,22 @@ var diamondGraphRotation = function diamondGraphRotation(graph) {
     return _objectSpread(_objectSpread({
       index: index
     }, rest), rotatedPos[index]);
-  });
+  }); // console.log(JSON.stringify(graph));
+  // console.log(JSON.stringify(diamonds));
+  // console.log(
+  //   JSON.stringify(
+  //     diamonds.map(({ wii: width, height, ...d }) => {
+  //       const update: any = {};
+  //       if (positions[d.index]) {
+  //         if (positions[d.index].x) update.x = positions[d.index].x;
+  //         if (positions[d.index].y) update.y = positions[d.index].y;
+  //       }
+  //       return { ...d, ...update, width: width * 2, height: height * 2 };
+  //     })
+  //   )
+  // );
 
-  console.log(JSON.stringify(graph));
-  console.log(JSON.stringify(diamonds));
-  console.log(JSON.stringify(diamonds.map(function (_ref4) {
-    var width = _ref4.wii,
-        height = _ref4.height,
-        d = objectWithoutProperties(_ref4, ["wii", "height"]);
 
-    var update = {};
-
-    if (positions[d.index]) {
-      if (positions[d.index].x) update.x = positions[d.index].x;
-      if (positions[d.index].y) update.y = positions[d.index].y;
-    }
-
-    return _objectSpread(_objectSpread(_objectSpread({}, d), update), {}, {
-      width: width * 2,
-      height: height * 2
-    });
-  })));
   return {
     graph: {
       nodes: updatedNodes,
@@ -233,16 +232,13 @@ var diamondGraphRotation = function diamondGraphRotation(graph) {
   };
 };
 
-function node2Diamond(_ref5, v, h) {
-  var x = _ref5.x,
-      y = _ref5.y,
-      width = _ref5.width,
-      height = _ref5.height,
-      index = _ref5.index;
+function node2Diamond(_ref4, v, h) {
+  var x = _ref4.x,
+      y = _ref4.y,
+      width = _ref4.width,
+      height = _ref4.height,
+      index = _ref4.index;
   return {
-    up: {
-      kind: 'diamond'
-    },
     index: index,
     x: x,
     y: y,
