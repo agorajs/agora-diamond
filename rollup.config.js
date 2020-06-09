@@ -5,6 +5,7 @@ import { terser } from 'rollup-plugin-terser';
 import pkg from './package.json';
 
 const extensions = ['.js', '.jsx', '.ts', '.tsx'];
+
 export default [
   // browser-friendly UMD build
   {
@@ -15,12 +16,14 @@ export default [
         file: pkg.iife,
         format: 'iife',
         exports: 'named',
+        globals: { fs: '{}', child_process: '{}' },
       },
       {
         name: 'AgoraDiamond',
         file: pkg.browser,
         format: 'umd',
         exports: 'named',
+        globals: { fs: '{}', child_process: '{}' },
       },
     ],
     plugins: [
