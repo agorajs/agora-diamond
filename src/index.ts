@@ -65,17 +65,21 @@ export const diamondGraphRotation: Function<Props> = function (
   for (let iIdx = 0; iIdx < diamonds.length; iIdx++) {
     const { index: i, y: yi, wii: wi } = diamonds[iIdx];
 
+    let ymax = null;
+    let ymin = null;
     for (let jIdx = iIdx + 1; jIdx < diamonds.length; jIdx++) {
       const { index: j, y: yj, wii: wj } = diamonds[jIdx];
 
       // xj >= xi
-      if (yi <= yj) {
+      if (yi <= yj && (ymax === null || yj <= ymax)) {
         //wi is not width
         constraints.push(`x${j} - x${i} + y${j} - y${i} >= ${wi + wj};`);
+        ymax = yj;
       }
 
-      if (yi >= yj) {
-        constraints.push(`x${j} - x${i} + y${i} - y${j} >= ${wi + wj};`);
+      if (yi >= yj && (ymin === null || yj >= ymin)) {
+        constraints.push(`x${j} - x${i} - y${j} + y${i} >= ${wi + wj};`);
+        ymin = yj;
       }
     }
   }
@@ -87,11 +91,12 @@ export const diamondGraphRotation: Function<Props> = function (
     constraints.push(`y${i} >= ${y};`);
   }
 
-  const lpsolve = constraints.join('\n');
   // transform to js constraint
+  const lpsolve = constraints.join('\n');
+
   const tmodel = ReformatLP(lpsolve);
 
-  console.log(lpsolve);
+  // console.log(lpsolve);
   const solver = Solve(tmodel);
 
   const { feasible, result, bounded, ...rest } = solver;
@@ -125,20 +130,20 @@ export const diamondGraphRotation: Function<Props> = function (
     ...rotatedPos[index],
   }));
 
-  console.log(JSON.stringify(graph));
-  console.log(JSON.stringify(diamonds));
-  console.log(
-    JSON.stringify(
-      diamonds.map(({ wii: width, height, ...d }) => {
-        const update: any = {};
-        if (positions[d.index]) {
-          if (positions[d.index].x) update.x = positions[d.index].x;
-          if (positions[d.index].y) update.y = positions[d.index].y;
-        }
-        return { ...d, ...update, width: width * 2, height: height * 2 };
-      })
-    )
-  );
+  // console.log(JSON.stringify(graph));
+  // console.log(JSON.stringify(diamonds));
+  // console.log(
+  //   JSON.stringify(
+  //     diamonds.map(({ wii: width, height, ...d }) => {
+  //       const update: any = {};
+  //       if (positions[d.index]) {
+  //         if (positions[d.index].x) update.x = positions[d.index].x;
+  //         if (positions[d.index].y) update.y = positions[d.index].y;
+  //       }
+  //       return { ...d, ...update, width: width * 2, height: height * 2 };
+  //     })
+  //   )
+  // );
   return { graph: { nodes: updatedNodes, edges: graph.edges } };
 };
 
@@ -158,7 +163,6 @@ function node2Diamond(
   h: number
 ): Diamond {
   return {
-    up: { kind: 'diamond' },
     index,
     x,
     y,
