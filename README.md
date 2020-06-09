@@ -1,4 +1,4 @@
-# Implementation for agorajs framework
+# Implementation of Diamond algorithm for agorajs framework
 
 > Meulemans, W. (2019), _Efficient Optimal Overlap Removal: Algorithms and Experiments_. Computer Graphics Forum, 38: 713-723. doi:10.1111/cgf.13722
 
