@@ -16,25 +16,23 @@ export default [
         file: pkg.iife,
         format: 'iife',
         exports: 'named',
-        globals: { fs: '{}', child_process: '{}' },
       },
       {
         name: 'AgoraDiamond',
         file: pkg.browser,
         format: 'umd',
         exports: 'named',
-        globals: { fs: '{}', child_process: '{}' },
       },
     ],
     plugins: [
       resolve({ extensions }), // so Rollup can find `ms`
-      commonjs(), // so Rollup can convert `ms` to an ES module
+      commonjs({ ignore: ['fs', 'child_process'] }), // so Rollup can convert `ms` to an ES module
       babel({
         extensions,
         babelHelpers: 'bundled',
         exclude: ['node_modules/**'],
       }),
-      terser(),
+      // terser(),
     ],
   },
 
