@@ -1,8 +1,9 @@
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import babel from '@rollup/plugin-babel';
-import { terser } from 'rollup-plugin-terser';
-import pkg from './package.json';
+import terser from '@rollup/plugin-terser';
+import pkg from './package.json' assert { type: 'json' };
+import ignore from 'rollup-plugin-ignore';
 
 const extensions = ['.js', '.jsx', '.ts', '.tsx'];
 
@@ -26,6 +27,7 @@ export default [
     ],
     plugins: [
       resolve({ extensions }), // so Rollup can find `ms`
+      ignore(['fs', 'child_process']),
       commonjs({ ignore: ['fs', 'child_process'] }), // so Rollup can convert `ms` to an ES module
       babel({
         extensions,

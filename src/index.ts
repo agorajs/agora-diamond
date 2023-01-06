@@ -1,7 +1,6 @@
-import type { Function, Node } from 'agora-graph';
-import { toPolar, toCartesian } from 'agora-graph';
+import { toPolar, toCartesian, type Function, type Node } from 'agora-graph';
 import _ from 'lodash';
-import { Solve, ReformatLP } from 'javascript-lp-solver';
+import lpsolver from 'javascript-lp-solver';
 
 export type Props = {
   padding: number;
@@ -94,10 +93,10 @@ export const diamondGraphRotation: Function<Props> = function (
   // transform to js constraint
   const lpsolve = constraints.join('\n');
 
-  const tmodel = ReformatLP(lpsolve);
+  const tmodel = lpsolver.ReformatLP(lpsolve);
 
   // console.log(lpsolve);
-  const solver = Solve(tmodel);
+  const solver = lpsolver.Solve(tmodel);
 
   const { feasible, result, bounded, ...rest } = solver;
   // index => {x?: y:?}
