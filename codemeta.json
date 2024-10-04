@@ -1,0 +1,73 @@
+{
+  "@context": "https://w3id.org/codemeta/3.0",
+  "type": "SoftwareSourceCode",
+  "applicationCategory": "Computer Science",
+  "author": [
+    {
+      "id": "https://orcid.org/0000-0002-9203-4229",
+      "type": "Person",
+      "affiliation": {
+        "type": "Organization",
+        "name": "LIRMM, Univerrsité de Montpellier, CNRS, Montpellier, France"
+      },
+      "email": "chen.fati@gmail.com",
+      "familyName": "Chen",
+      "givenName": "Fati"
+    },
+    {
+      "id": "_:author_2",
+      "type": "Person",
+      "affiliation": {
+        "type": "Organization",
+        "name": "Groupe AMIS, Université Paul-Valéry Montpellier 3, Montpellier, France"
+      },
+      "email": "laurent.piccinini@univ-montp3.fr",
+      "familyName": "Piccinini",
+      "givenName": "Laurent"
+    },
+    {
+      "id": "https://orcid.org/0000-0002-8277-3490",
+      "type": "Person",
+      "affiliation": {
+        "type": "Organization",
+        "name": "LIRMM, Université de Montpellier, CNRS, Montpellier, France"
+      },
+      "email": "pascal.poncelet@lirmm.fr",
+      "familyName": "Poncelet",
+      "givenName": "Pascal"
+    },
+    {
+      "id": "https://orcid.org/0000-0001-7068-176X",
+      "type": "Person",
+      "affiliation": {
+        "type": "Organization",
+        "name": "Groupe AMIS, Université Paul-Valéry Montpellier 3, Montpellier, France"
+      },
+      "email": "arnaud.sallaberry@lirmm.fr",
+      "familyName": "Sallaberry",
+      "givenName": "Arnaud"
+    }
+  ],
+  "codeRepository": "git+https://github.com/agorajs/agora-diamond.git",
+  "dateCreated": "2019-09-12",
+  "dateModified": "2023-01-06",
+  "datePublished": "2019-09-18",
+  "description": "Implementation for agorajs of Diamond algorithm\n\n> Meulemans, W. (2019), _Efficient Optimal Overlap Removal: Algorithms and Experiments_. Computer Graphics Forum, 38: 713-723. doi:10.1111/cgf.13722\n\n```bibtex\n@article{doi:10.1111/cgf.13722,\n    author = {Meulemans, W.},\n    title = {Efficient Optimal Overlap Removal: Algorithms and Experiments},\n    journal = {Computer Graphics Forum},\n    volume = {38},\n    number = {3},\n    pages = {713-723},\n    keywords = {CCS Concepts, • Human-centered computing → Visualization},\n    doi = {10.1111/cgf.13722},\n    url = {https://onlinelibrary.wiley.com/doi/abs/10.1111/cgf.13722},\n    eprint = {https://onlinelibrary.wiley.com/doi/pdf/10.1111/cgf.13722},\n    abstract = {Abstract Motivated by visualizing spatial data using proportional symbols, we study the following problem: given a set of overlapping squares of varying sizes, minimally displace the squares as to remove the overlap while maintaining the orthogonal order on their centers. Though this problem is NP-hard, we show that rotating the squares by 45 degrees into diamonds allows for a linear or convex quadratic program. It is thus efficiently solvable even for relatively large instances. This positive result and the flexibility offered by constraint programming allow us to study various trade-offs for overlap removal. Specifically, we model and evaluate through computational experiments the relations between displacement, scale and order constraints for static data, and between displacement and temporal coherence for time-varying data. Finally, we also explore the generalization of our methodology to other shapes.},\n    year = {2019}\n}\n```",
+  "downloadUrl": "https://github.com/agorajs/agora-diamond/archive/refs/tags/1.1.6.tar.gz",
+  "funder": {
+    "type": "Organization",
+    "name": "Agence nationale de la recherche, France"
+  },
+  "isPartOf": "https://agorajs.github.io/",
+  "keywords": ["Graph drawing", "Layout adjustment", "Node overlap removal"],
+  "license": "https://spdx.org/licenses/MIT",
+  "name": "agorajs: implementation of Diamond algorithm",
+  "programmingLanguage": ["javascript", "typescript"],
+  "runtimePlatform": ["browser", "node"],
+  "version": "1.1.6",
+  "developmentStatus": "inactive",
+  "funding": "ANR-17-CE38-0013",
+  "isSourceCodeOf": "agorajs",
+  "issueTracker": "https://github.com/agorajs/agora-diamond/issues",
+  "referencePublication": "https://dx.doi.org/10.7155/jgaa.00532"
+}
